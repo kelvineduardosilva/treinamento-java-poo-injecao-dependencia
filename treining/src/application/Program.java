@@ -1,14 +1,12 @@
 package application;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
 
-import entities.Produto;
-import entities.ProdutoImportado;
-import entities.ProdutoUsado;
+import entities.Contribuinte;
+import entities.ContribuintePessoaFisica;
+import entities.ContribuintePessoaJuridica;
 
 public class Program {
 
@@ -16,66 +14,53 @@ public class Program {
 		Scanner entrada = new Scanner(System.in);
 		Locale.setDefault(Locale.US);
 
-		System.out.println("Quantos Produtos serão?: ");
+		System.out.println("Quantos contribuintes serão?: ");
 		int n = entrada.nextInt();
 		entrada.nextLine();
 
-		ArrayList<Produto> produtos = new ArrayList<>();
+		ArrayList<Contribuinte> contribuintes = new ArrayList<>();
 
 		for (int i = 0; i < n; i++) {
-			System.out.println("Seu produto é cumum, usado ou importado?(c/u/i)");
+			System.out.println("O contribuinte " + (i + 1) + " é pessoa fisica ou juridica?(f/j): ");
 			String r = entrada.nextLine().toLowerCase().trim();
-			if (r.equals("c")) {
-				System.out.println("Nome do produto comum: ");
+			if (r.equals("f")) {
+				System.out.println("Qual seu nome?: ");
 				String nome = entrada.nextLine();
 
-				System.out.println("Preço do produto comum: ");
-				double preco = entrada.nextDouble();
+				System.out.println("Qual sua renda anual?: ");
+				double rendaAnual = entrada.nextDouble();
 				entrada.nextLine();
 
-				Produto pc1 = new Produto(nome, preco);
+				System.out.println("Qual seu gasto com saude?: ");
+				double gastoComSaude = entrada.nextDouble();
+				entrada.nextLine();
 
-				produtos.add(pc1);
+				Contribuinte pessoaFisica = new ContribuintePessoaFisica(nome, rendaAnual, gastoComSaude);
 
-			} else if (r.equals("u")) {
-				System.out.println("Nome do produto usado: ");
+				contribuintes.add(pessoaFisica);
+			} else if (r.equals("j")) {
+				System.out.println("Qual seu nome?: ");
 				String nome = entrada.nextLine();
 
-				System.out.println("Preço do produto usado: ");
-				double preco = entrada.nextDouble();
+				System.out.println("Qual sua renda anual?: ");
+				double rendaAnual = entrada.nextDouble();
 				entrada.nextLine();
 
-				System.out.println("Qual data de fabricação? (dd/MM/yyyy): ");
-				DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-				String data = entrada.nextLine();
-				LocalDate dataFabricacao = LocalDate.parse(data, fmt1);
-
-				Produto pu1 = new ProdutoUsado(nome, preco, dataFabricacao);
-				produtos.add(pu1);
-
-				produtos.add(pu1);
-			} else if (r.equals("i")) {
-				System.out.println("Nome do produto importado: ");
-				String nome = entrada.nextLine();
-
-				System.out.println("Preço do produto importado: ");
-				double preco = entrada.nextDouble();
+				System.out.println("Qual seu número de funcionário?: ");
+				int funcionarios = entrada.nextInt();
 				entrada.nextLine();
 
-				System.out.println("Qual valor da taxa alfandegária?: ");
-				double taxa = entrada.nextDouble();
-				entrada.nextLine();
+				Contribuinte pessoaJuridica = new ContribuintePessoaJuridica(nome, rendaAnual, funcionarios);
 
-				Produto pi1 = new ProdutoImportado(nome, preco, taxa);
-				produtos.add(pi1);
-
+				contribuintes.add(pessoaJuridica);
 			}
 		}
-		System.out.println("Etique de preços: ");
-		for(int i = 0; i < produtos.size(); i++) {
-			System.out.println(produtos.get(i).etiquetaDePreco()); 
+		System.out.println("IMPOSTOS PAGOS: ");
+		double totalTaxas = 0.0;
+		for(int  i = 0; i < contribuintes.size(); i++) {
+			System.out.println(contribuintes.get(i).getNome() + ": " + "$ " + contribuintes.get(i).calcularImposto());
+			totalTaxas += contribuintes.get(i).calcularImposto();
 		}
-
+		System.out.println("Taxa total: " + totalTaxas);
 	}
-
 }
