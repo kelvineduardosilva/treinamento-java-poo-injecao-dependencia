@@ -1,83 +1,70 @@
 package application;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
-import entities.Cliente;
-import entities.ItemPedido;
-import entities.Pedido;
-import entities.Produto;
-import entities.enumeracao.StatusPedido;
+import entities.Funcionario;
+import entities.FuncionarioTerceirizado;
 
 public class Program {
 
 	public static void main(String[] args) {
-		LocalDateTime horaAtualIso = LocalDateTime.now();
 		Scanner entrada = new Scanner(System.in);
-		DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-		System.out.println("Nome: ");
-		String nome = entrada.nextLine();
-
-		System.out.println("Email: ");
-		String email = entrada.nextLine();
-
-		System.out.println("Data de Nascimento(dd/MM/yyyy): ");
-		String dtn = entrada.nextLine();
-
-		LocalDate dataDeNascimento = LocalDate.parse(dtn, fmt1);
-
-		Cliente cliente = new Cliente(nome, email, dataDeNascimento);
-
-		System.out.println("Insira os dados do pedido.");
-		System.out.println("Status: ");
-
-		StatusPedido status = StatusPedido.valueOf(entrada.nextLine().toUpperCase());
-
-		System.out.println("Quantos itens tem o pedido?: ");
+		Locale.setDefault(Locale.US);
+		
+		System.out.println("Quantos Fúncionarios Serão?: ");
 		int n = entrada.nextInt();
 		entrada.nextLine();
 
-		Pedido pedido = new Pedido(horaAtualIso, status);
+		List<Funcionario> funcionarios = new ArrayList<>();
 
 		for (int i = 0; i < n; i++) {
-			System.out.println("Digite os dados do item número " + i + 1);
+			System.out.println("O fúncionario é terceirizado? (s/n)");
+			String sn = entrada.nextLine().toLowerCase().trim();
 
-			System.out.println("Nome do item?: ");
-			String nomePedido = entrada.nextLine();
+			if (sn.equals("s")){
+				System.out.println("Nome do fúncionario terceirizado: ");
+				String nome = entrada.nextLine();
 
-			System.out.println("Qual preço do item?: ");
-			double preco = entrada.nextDouble();
-			entrada.nextLine();
+				System.out.println("Quantas horas trabalhadas?: ");
+				int horasTrabalhadas = entrada.nextInt();
+				entrada.nextLine();
 
-			System.out.println("Qual quantidade de item?: ");
-			int quantidade = entrada.nextInt();
-			entrada.nextLine();
+				System.out.println("Qual valor por hora?: ");
+				double valorPorHora = entrada.nextDouble();
+				entrada.nextLine();
 
-			Produto produto = new Produto(nomePedido, preco);
+				System.out.println("Qual valor adicional?: ");
+				double valorAdicional = entrada.nextDouble();
+				entrada.nextLine();
 
-			ItemPedido item = new ItemPedido(quantidade, preco, produto);
+				Funcionario f1t = new FuncionarioTerceirizado(nome, horasTrabalhadas, valorPorHora, valorAdicional);
+				funcionarios.add(f1t);
+			}
 
-			pedido.addItem(item);
+			else if (sn.equals("n")) {
+				System.out.println("Nome do fúncionario: ");
+				String nome = entrada.nextLine();
 
+				System.out.println("Quantas horas trabalhadas?: ");
+				int horasTrabalhadas = entrada.nextInt();
+				entrada.nextLine();
+
+				System.out.println("Qual valor por hora?: ");
+				double valorPorHora = entrada.nextDouble();
+				entrada.nextLine();
+				Funcionario f1 = new Funcionario(nome, horasTrabalhadas, valorPorHora);
+				funcionarios.add(f1);
+			}
 		}
 
-		System.out.println("Resumo do pedido: ");
+		System.out.println("Pagamentos: ");
 
-		System.out.println("Momento do pedido: " + horaAtualIso.format(fmt1));
-		System.out.println("Status do pedido: " + status);
-		System.out.println("Cliente: " + cliente.getNome() + "(" + cliente.getDataDeNascimento() + ") " + "- "
-				+ cliente.getEmail());
-		System.out.println("Itens do pedido: ");
-
-		for (int i = 0; i < pedido.somarItens(); i++) {
-
-			System.out.println(pedido.acessarNome(i) + ", " + "$" + pedido.lerPreco(i) + " Quantidade: "
-					+ pedido.lerQuantidade(i) + " SubTotal: " + "$" + pedido.acessarSubTotal(i));
+		for (int i = 0; i < funcionarios.size(); i++) {
+			System.out.println(funcionarios.get(i).getNome() + " - $ " + funcionarios.get(i).valorSario());
 		}
-		System.out.println("Preço total: " + "R$" + pedido.total());
 
 	}
 
