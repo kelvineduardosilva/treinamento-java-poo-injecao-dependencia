@@ -1,46 +1,58 @@
 package application;
-import java.util.Locale;
-import java.util.Scanner;
 
-import entities.ContaBancaria;
-import exceptions.ExceptionContaBancaria;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Program {
 
-	public static void main(String[] args) {
-		Scanner entrada = new Scanner(System.in);
-		Locale.setDefault(Locale.US);
-		
-		System.out.println("Entre com os dados da conta: ");
-		
-		System.out.println("Número da conta: ");
-		int numeroConta = entrada.nextInt();
-		entrada.nextLine();
-		
-		System.out.println("Titular da conta: ");
-		String titular = entrada.nextLine();
-		
-		System.out.println("Saldo inicial: ");
-		double saldoInicial = entrada.nextDouble();
-		entrada.nextLine();
-		
-		System.out.println("Qual limite de saque?: ");
-		double limiteSaque = entrada.nextDouble();
-		entrada.nextLine();
-		
-		ContaBancaria conta = new ContaBancaria(numeroConta, titular, saldoInicial, limiteSaque); 
-		try {
-			System.out.println("Qual valor de saque?: ");
-			double saque = entrada.nextDouble();
-			entrada.nextLine();
-			
-			conta.saque(saque);
-			
-			System.out.println("Saldo atualizado: " + conta.getSaldo());
-		}
-		catch(ExceptionContaBancaria e) {
-			System.out.println(e.getMessage());
-		}
-		
-	}
+    public static void main(String[] args) {
+
+        String caminho = "C:/Users/kelvi/OneDrive/Documentos/exfiles/produtos.csv.txt";
+        String caminhoSaida = "C:/Users/kelvi/OneDrive/Documentos/exfiles/out/soma.csv.txt";
+
+
+        try (
+            BufferedReader br = new BufferedReader(new FileReader(caminho));
+            FileWriter fw = new FileWriter(caminhoSaida, true)
+        ) {
+
+            String line = br.readLine();
+
+            while (line != null) {
+
+                String[] dados = line.split(",");
+
+                float preco = Float.parseFloat(dados[1]);
+                int quantidade = Integer.parseInt(dados[2]);
+
+                float valorTotal = preco * quantidade;
+
+                fw.write(dados[0] + "," + valorTotal);
+                fw.write(System.lineSeparator());
+
+                line = br.readLine();
+                fw.close();
+            }
+
+        } catch (IOException e) {
+            System.out.println("Erro ao acessar o arquivo: " + e.getMessage());
+            return;
+        }
+
+        try (BufferedReader br1 = new BufferedReader(new FileReader(caminhoSaida))) {
+
+            String linha = br1.readLine();
+
+            while (linha != null) {
+                System.out.println(linha);
+                linha = br1.readLine();
+            }
+
+        } catch (IOException e) {
+            System.out.println("Erro ao ler o arquivo de saída: " + e.getMessage());
+        }
+    }
 }
