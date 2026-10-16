@@ -1,58 +1,67 @@
 package application;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.Scanner;
+import classesConcretas.PagamentoBoleto;
+import classesConcretas.PagamentoCartao;
+import classesConcretas.PagamentoPix;
+import entities.Produto;
+import interfaces.FormaPagamento;
 
 public class Program {
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
-        String caminho = "C:/Users/kelvi/OneDrive/Documentos/exfiles/produtos.csv.txt";
-        String caminhoSaida = "C:/Users/kelvi/OneDrive/Documentos/exfiles/out/soma.csv.txt";
+		Scanner entrada = new Scanner(System.in);
 
+		System.out.print("Qual nome do produto?: ");
+		String nome = entrada.nextLine();
 
-        try (
-            BufferedReader br = new BufferedReader(new FileReader(caminho));
-            FileWriter fw = new FileWriter(caminhoSaida, true)
-        ) {
+		System.out.println();
 
-            String line = br.readLine();
+		System.out.print("Qual preço do produto?: ");
+		Double valor = entrada.nextDouble();
+		entrada.nextLine();
 
-            while (line != null) {
+		System.out.println();
 
-                String[] dados = line.split(",");
+		Produto produto = new Produto(nome, valor);
 
-                float preco = Float.parseFloat(dados[1]);
-                int quantidade = Integer.parseInt(dados[2]);
+		boolean controle = true;
+		int fp = 0;
+		String fmpg = "";
+		FormaPagamento formapagamento = null;
+		double total = 0.0;
+		while (controle) {
 
-                float valorTotal = preco * quantidade;
+			System.out.println("Qual forma de pagamento?: (pix: 1, cartão: 2, boleto: 3)");
+			fp = entrada.nextInt();
+			entrada.nextLine();
+			
+			if (fp == 1) {
+				formapagamento = new PagamentoPix();
+				total = formapagamento.pagar(valor);
+				fmpg = "Pix";
+				controle = false;
+			} else if (fp == 2) {
+				formapagamento = new PagamentoCartao();
+				total = formapagamento.pagar(valor);
+				fmpg = "Cartão";
+				controle = false;
+			} else if (fp == 3) {
+				formapagamento = new PagamentoBoleto();
+				total = formapagamento.pagar(valor);
+				fmpg = "Boleto";
+				controle = false;
+			}
+			else {
+				System.out.println("Opção inválida! Escolha entre: (pix: 1, cartão: 2, boleto: 3)");
+			}
+			
+		}
+		System.out.println("Produto: " + produto.getNome());
+		System.out.println("Preço do produto: " + produto.getPreco());
+		System.out.println("Forma de pagamento escolhida " + fmpg + " (" + fp + ")");
+		System.out.println("Total a ser pago: " + total);
 
-                fw.write(dados[0] + "," + valorTotal);
-                fw.write(System.lineSeparator());
+	}
 
-                line = br.readLine();
-                fw.close();
-            }
-
-        } catch (IOException e) {
-            System.out.println("Erro ao acessar o arquivo: " + e.getMessage());
-            return;
-        }
-
-        try (BufferedReader br1 = new BufferedReader(new FileReader(caminhoSaida))) {
-
-            String linha = br1.readLine();
-
-            while (linha != null) {
-                System.out.println(linha);
-                linha = br1.readLine();
-            }
-
-        } catch (IOException e) {
-            System.out.println("Erro ao ler o arquivo de saída: " + e.getMessage());
-        }
-    }
 }
