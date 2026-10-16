@@ -1,67 +1,31 @@
 package application;
+
 import java.util.Scanner;
-import classesConcretas.PagamentoBoleto;
-import classesConcretas.PagamentoCartao;
-import classesConcretas.PagamentoPix;
-import entities.Produto;
-import interfaces.FormaPagamento;
+
+import classesConcretas.NotificadorEmail;
+import classesConcretas.NotificadorSms;
+import interfaces.Notificador;
+import servicos.ServicoNotificador;
 
 public class Program {
-
 	public static void main(String[] args) {
-
 		Scanner entrada = new Scanner(System.in);
 
-		System.out.print("Qual nome do produto?: ");
-		String nome = entrada.nextLine();
-
-		System.out.println();
-
-		System.out.print("Qual preço do produto?: ");
-		Double valor = entrada.nextDouble();
+		System.out.println("Por onde desejada ser notificado?: (E-mail : 1 - SMS : 2)");
+		int d = entrada.nextInt();
 		entrada.nextLine();
 
-		System.out.println();
+		Notificador notificadorEmail = new NotificadorEmail();
+		Notificador notificadorSms = new NotificadorSms();
 
-		Produto produto = new Produto(nome, valor);
-
-		boolean controle = true;
-		int fp = 0;
-		String fmpg = "";
-		FormaPagamento formapagamento = null;
-		double total = 0.0;
-		while (controle) {
-
-			System.out.println("Qual forma de pagamento?: (pix: 1, cartão: 2, boleto: 3)");
-			fp = entrada.nextInt();
-			entrada.nextLine();
-			
-			if (fp == 1) {
-				formapagamento = new PagamentoPix();
-				total = formapagamento.pagar(valor);
-				fmpg = "Pix";
-				controle = false;
-			} else if (fp == 2) {
-				formapagamento = new PagamentoCartao();
-				total = formapagamento.pagar(valor);
-				fmpg = "Cartão";
-				controle = false;
-			} else if (fp == 3) {
-				formapagamento = new PagamentoBoleto();
-				total = formapagamento.pagar(valor);
-				fmpg = "Boleto";
-				controle = false;
-			}
-			else {
-				System.out.println("Opção inválida! Escolha entre: (pix: 1, cartão: 2, boleto: 3)");
-			}
-			
+		if (d == 1) {
+			ServicoNotificador serviconotificador = new ServicoNotificador(notificadorEmail);
+			System.out.println(serviconotificador.notificar());
 		}
-		System.out.println("Produto: " + produto.getNome());
-		System.out.println("Preço do produto: " + produto.getPreco());
-		System.out.println("Forma de pagamento escolhida " + fmpg + " (" + fp + ")");
-		System.out.println("Total a ser pago: " + total);
+		else if(d == 2) {
+			ServicoNotificador serviconotificador = new ServicoNotificador(notificadorSms);
+			System.out.println(serviconotificador.notificar());
+		}
 
 	}
-
 }
